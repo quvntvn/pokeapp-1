@@ -1,5 +1,6 @@
 import http from 'http';
 import socketIO from 'socket.io';
+import { startGame, terminateGame, handleMove } from './game';
 
 const server = http.createServer((req, res) => {
     res.write('hello world');
@@ -10,13 +11,33 @@ const io = socketIO(server, {
     pingTimeout: 60000,
 });
 
-io.on('connection', socket => {
-    console.log('someone is connected');
+// Shape of Player { name, socket, pokemon }
+const players = [];
+let config = { turn: 0 };
 
-    socket.emit('connected', 'test emit');
+io.on('connection', socket => {
+    const name = socket.handshake.query.name || 'Someone';
+    console.log(`${name} is connected`);
+    socket.emit('connected');
+
+    if (players.length < 2) {
+        players.push({ name, socket, pokemon: null });
+    } else {
+        socket.emit('connection_refused');
+        socket.disconnect();
+    }
+
+    if (2 === players.length) {
+        startGame(players, config);
+    }
 
     socket.on('disconnect', () => {
-        console.log('someone has disconnected');
+        console.log(`${name} has disconnected`);
+        terminateGame(socket, players);
+    });
+
+    socket.on('move', moveId => {
+        handleMove(moveId, players, config);
     });
 });
 
