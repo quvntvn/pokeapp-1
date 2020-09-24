@@ -3,13 +3,44 @@ import pokemons from './pokemons';
 export const startGame = (players, config) => {
     console.log('Game starting...');
 
-    // TODO
+    for (const player of players) {
+        const index = Math.floor(Math.random() * pokemons.length);
+        player.pokemon = { ...pokemons[index] };
+    }
+
+    config.turn = Math.floor(Math.random() * 2); // 0 1
+
+    // for (let i = 0; i < players.length; i++)
+    for (const [index, player] of players.entries()) {
+        const { socket, ...you } = player;
+        // const { socket: _, ...opponent} = players.find(localPlayer => localPlayer.socket.id !== player.socket.id);
+        const { socket: _, ...opponent} = players.find(localPlayer => {
+            return localPlayer.socket.id !== player.socket.id;
+        });
+
+        player.socket.emit('started', {
+            you,
+            opponent,
+            turn: index === config.turn ? 'you' : 'opponent',
+        });
+    }
 };
 
 export const terminateGame = (socket, players) => {
     console.log('Game terminating...');
 
-    // TODO
+    const index = players.findIndex(player => player.socket.id === socket.id);
+
+    if (-1 !== index) {
+        players.splice(index, 1);
+    }
+
+    // players[0].pokemon = null;
+
+    for (const player of players) {
+        player.pokemon = null;
+        player.socket.emit('terminated');
+    }
 };
 
 export const handleMove = (moveId, players, config) => {
