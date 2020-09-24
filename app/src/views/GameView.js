@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default () => {
+export default ({ data }) => {
     return (
         <>
             <div className="c-game">
@@ -11,10 +11,9 @@ export default () => {
                     </div>
                     <div className="c-pokemon">
                         <div className="c-pokemon__image">
-                            <img
-                                alt="Opponent Pokemon"
-                                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/134.png"
-                            />
+                            {data?.opponent?.pokemon && (
+                                <img alt="Opponent Pokemon" src={data.opponent.pokemon.image} />
+                            )}
                         </div>
                     </div>
                 </div>

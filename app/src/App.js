@@ -1,14 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import GameView from './views/GameView';
 import LoginView from './views/LoginView';
 import WelcomeView from './views/WelcomeView';
 import ChooseView from './views/ChooseView';
+import io from 'socket.io-client';
 
 export default () => {
+    const [name, setName] = useState();
+    const [socket, setSocket] = useState();
+    const [data, setData] = useState();
+
+    useEffect(() => {
+        if (!name) {
+            return;
+        }
+
+        setSocket(io(`http://localhost:3000?name=${name}`));
+    }, [name]);
+
+    useEffect(() => {
+        if (!socket) {
+            return;
+        }
+
+        socket.on('started', localData => {
+            console.log(localData);
+            setData(localData);
+        });
+    }, [socket]);
+
     return (
         <div className="c-app">
-            <GameView />
-            {/* <LoginView /> */}
+            {name && <GameView data={data} />}
+            {!name && <LoginView setName={setName} />}
             {/* <WelcomeView /> */}
             {/* <ChooseView /> */}
         </div>
