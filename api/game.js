@@ -11,15 +11,21 @@ export const startGame = (players, config) => {
     config.turn = Math.floor(Math.random() * 2); // 0 1
 
     // for (let i = 0; i < players.length; i++)
+    // [{ name, socket, pokemon }, { name, socket, pokemon }]
+    // players.entries() => [[0, { name, socket, pokemon }], [1, { name, socket, pokemon }]]
     for (const [index, player] of players.entries()) {
         const { socket, ...you } = player;
         // const { socket: _, ...opponent} = players.find(localPlayer => localPlayer.socket.id !== player.socket.id);
-        const { socket: _, ...opponent} = players.find(localPlayer => {
+        const { socket: toto, ...opponent} = players.find(localPlayer => {
             return localPlayer.socket.id !== player.socket.id;
         });
 
         player.socket.emit('started', {
+            'you': you,
+            you: you,
             you,
+            'opponent': opponent,
+            opponent: opponent,
             opponent,
             turn: index === config.turn ? 'you' : 'opponent',
         });

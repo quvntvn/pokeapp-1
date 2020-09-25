@@ -9,6 +9,7 @@ export default () => {
     const [name, setName] = useState();
     const [socket, setSocket] = useState();
     const [data, setData] = useState();
+    const [status, setStatus] = useState('waiting'); // waiting playing terminated ended
 
     useEffect(() => {
         if (!name) {
@@ -26,12 +27,13 @@ export default () => {
         socket.on('started', localData => {
             console.log(localData);
             setData(localData);
+            setStatus('playing');
         });
     }, [socket]);
 
     return (
         <div className="c-app">
-            {name && <GameView data={data} />}
+            {name && <GameView data={data} socket={socket} status={status} />}
             {!name && <LoginView setName={setName} />}
             {/* <WelcomeView /> */}
             {/* <ChooseView /> */}
