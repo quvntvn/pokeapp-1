@@ -1,6 +1,21 @@
 import React from 'react';
 
-export default ({ data }) => {
+export default ({ data, status, socket }) => {
+    let message = '';
+
+    if (status === 'waiting') {
+        message = "En attente d'un autre joueur...";
+    } else if (status === 'playing') {
+        // if data.turn === 'you'
+        message = 'Le combat commence';
+    }
+
+    const triggerAction1 = () => {
+        if (data.turn === 'you') {
+            socket.emit('move', 0);
+        }
+    };
+
     return (
         <>
             <div className="c-game">
@@ -34,13 +49,13 @@ export default ({ data }) => {
             </div>
             <div className="c-game-info">
                 <div className="c-message">
-                    Le combat commence...
+                    {message}
                     <div className="c-form u-mt-base">
                         <button onClick={() => console.log('TODO')}>Retourner au menu</button>
                     </div>
                 </div>
                 <div className="c-actions">
-                    <button className="c-actions__action" onClick={() => console.log('TODO')}>
+                    <button className="c-actions__action" onClick={triggerAction1}>
                         Action 1
                     </button>
                     <button className="c-actions__action" onClick={() => console.log('TODO')}>
